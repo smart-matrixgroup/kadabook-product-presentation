@@ -29,9 +29,17 @@ function AppTile({ slide }) {
     return { x: 9, y: 5, z: -8, s: 0.001 };
   }, [slide]);
 
+  const first = useRef(true);
   useFrame((state, dt) => {
     const o = g.current;
     if (!o) return;
+    if (first.current) {
+      // opening the deck mid-way: start already in place, no fly-in from the hero spot
+      first.current = false;
+      o.position.set(target.x, target.y, target.z);
+      o.scale.setScalar(target.s);
+    }
+    o.visible = o.scale.x > 0.02;
     const k = 1 - Math.pow(0.0025, dt);
     o.position.x = lerp(o.position.x, target.x, k);
     o.position.y = lerp(o.position.y, target.y, k);

@@ -2,7 +2,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 const src = readFileSync(new URL('../src/slides.jsx', import.meta.url), 'utf8');
 const list = src.slice(src.indexOf('export const SLIDES'));
-const re = /nav: '([^']+)'[^]*?time: '([^']+)',\s*ta: '([^']+)',\s*points: \[([^\]]+)\]/g;
+const re = /nav: \{ en: '([^']+)'[^]*?time: '([^']+)',\s*ta: '([^']+)',\s*points: \[([^\]]+)\]/g;
 let out = '# KadaBook — Presenter notes (தமிழ்)\n\n';
 let m, n = 1;
 while ((m = re.exec(list))) {

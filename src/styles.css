@@ -21,9 +21,9 @@
   --glass: rgba(255, 255, 255, 0.62);
   --glass-border: rgba(255, 255, 255, 0.85);
   --shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 20px 50px -18px rgba(30, 58, 138, 0.28), 0 4px 14px -6px rgba(30, 58, 138, 0.12);
-  --display: 'Plus Jakarta Sans', 'Inter', 'Segoe UI', system-ui, sans-serif;
-  --body: 'Inter', 'Segoe UI', system-ui, sans-serif;
-  --tamil: 'Noto Sans Tamil', 'Nirmala UI', 'Latha', sans-serif;
+  --display: 'Plus Jakarta Sans', 'Inter', 'Noto Sans Tamil', 'Noto Sans Sinhala', 'Nirmala UI', 'Iskoola Pota', 'Segoe UI', system-ui, sans-serif;
+  --body: 'Inter', 'Noto Sans Tamil', 'Noto Sans Sinhala', 'Nirmala UI', 'Iskoola Pota', 'Segoe UI', system-ui, sans-serif;
+  --tamil: 'Noto Sans Tamil', 'Noto Sans Sinhala', 'Inter', 'Nirmala UI', 'Latha', 'Iskoola Pota', sans-serif;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -179,10 +179,24 @@ img { display: block; }
 }
 .phone.float { animation: phoneFloat 7s ease-in-out infinite; }
 @keyframes phoneFloat { 50% { translate: 0 -14px; } }
-.phone-screen { position: relative; border-radius: 33px; overflow: hidden; background: #fff; aspect-ratio: 585 / 1266; box-shadow: 0 0 0 3px #0f172a; }
-.phone-screen img { width: 100%; height: 100%; object-fit: cover; user-select: none; }
+.phone-screen { position: relative; border-radius: 33px; overflow: hidden; background: #f3f6fd; box-shadow: 0 0 0 3px #0f172a; display: flex; flex-direction: column; }
+/* status bar gives the app its own top space (screenshots start right at the app bar) */
+.phone-status { flex: none; height: 34px; padding: 0 20px 0 24px; display: flex; align-items: center; justify-content: space-between; background: #f3f6fd; position: relative; }
+.ps-time { font: 700 12px/1 var(--body); color: #0f172a; letter-spacing: 0.01em; }
+.ps-island { position: absolute; left: 50%; top: 8px; translate: -50% 0; width: 76px; height: 20px; border-radius: 999px; background: #0f172a; }
+.ps-icons { display: flex; align-items: center; gap: 5px; }
+.ps-signal { display: flex; align-items: flex-end; gap: 1.5px; height: 10px; }
+.ps-signal b { width: 2.5px; border-radius: 1px; background: #0f172a; }
+.ps-signal b:nth-child(1) { height: 3px; } .ps-signal b:nth-child(2) { height: 5px; } .ps-signal b:nth-child(3) { height: 7.5px; } .ps-signal b:nth-child(4) { height: 10px; }
+.ps-wifi { width: 12px; height: 9px; background: #0f172a; clip-path: polygon(50% 100%, 0 30%, 15% 12%, 50% 0, 85% 12%, 100% 30%); border-radius: 2px; }
+.ps-batt { width: 20px; height: 10px; border-radius: 3px; border: 1.5px solid #0f172a; position: relative; }
+.ps-batt::before { content: ''; position: absolute; inset: 1px; right: 4px; border-radius: 1px; background: #0f172a; }
+.ps-batt::after { content: ''; position: absolute; right: -3.5px; top: 2.5px; width: 2px; height: 3px; border-radius: 0 1px 1px 0; background: #0f172a; }
+.phone-app { position: relative; aspect-ratio: 585 / 1266; overflow: hidden; }
+.phone-app img { width: 100%; height: 100%; object-fit: cover; user-select: none; }
+.phone-home { flex: none; height: 16px; display: grid; place-items: center; background: #f3f6fd; }
+.phone-home span { width: 34%; height: 4px; border-radius: 4px; background: #0f172a; opacity: 0.85; }
 .phone-sheen { position: absolute; inset: 0; background: linear-gradient(115deg, rgba(255, 255, 255, 0.45) 0%, transparent 28%, transparent 70%, rgba(255, 255, 255, 0.12)); pointer-events: none; }
-.phone-island { position: absolute; top: 17px; left: 50%; width: 70px; height: 18px; translate: -50% 0; background: #0f172a; border-radius: 999px; }
 .phone-shadow { position: absolute; left: 12%; right: 12%; bottom: -34px; height: 30px; border-radius: 50%; background: radial-gradient(closest-side, rgba(30, 58, 138, 0.28), transparent); filter: blur(4px); }
 .phones-fan { display: flex; align-items: center; justify-content: center; }
 
@@ -469,3 +483,56 @@ kbd { display: inline-block; min-width: 22px; padding: 1px 6px; border-radius: 6
 @media (prefers-reduced-motion: reduce) {
   .bg-mesh, .phone.float, .hero-badge, .btn-primary::after { animation: none !important; }
 }
+
+/* ═══ language switch + music ═══ */
+.topbar { position: absolute; z-index: 12; top: 22px; right: 28px; display: flex; gap: 10px; align-items: center; }
+.lang-switch, .music-pill {
+  display: flex; align-items: center; gap: 2px; padding: 5px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72); border: 1px solid var(--glass-border); box-shadow: var(--shadow); backdrop-filter: blur(14px);
+}
+.lang-switch > svg { color: var(--brand600); margin: 0 6px 0 8px; }
+.lang-switch button { position: relative; height: 34px; min-width: 50px; padding: 0 12px; border-radius: 999px; color: var(--muted); }
+.lang-switch button b { position: relative; z-index: 1; font: 700 14px/1 var(--body); }
+.lang-switch button.on { color: #fff; }
+.lang-pill { position: absolute; inset: 0; border-radius: 999px; background: linear-gradient(135deg, #2563eb, #1d4ed8); box-shadow: 0 6px 16px -6px #1d4ed8; }
+.music-pill button { width: 34px; height: 34px; border-radius: 999px; display: grid; place-items: center; color: var(--brand700); }
+.music-pill.on button { background: linear-gradient(135deg, #ec4899, #7c3aed); color: #fff; box-shadow: 0 6px 16px -6px #7c3aed; }
+.music-pill input { width: 90px; margin: 0 10px 0 8px; accent-color: #7c3aed; }
+.eq { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+.eq i { width: 3px; border-radius: 2px; background: #fff; animation: eq 0.9s ease-in-out infinite; }
+.eq i:nth-child(2) { animation-delay: -0.3s; } .eq i:nth-child(3) { animation-delay: -0.6s; } .eq i:nth-child(4) { animation-delay: -0.15s; }
+@keyframes eq { 0%, 100% { height: 4px; } 50% { height: 14px; } }
+
+/* Tamil / Sinhala run longer and taller than English: scale headings down, open the line-height */
+.lang-ta .title, .lang-si .title { font-size: 44px; line-height: 1.22; letter-spacing: -0.01em; }
+.lang-ta .slide.center .title, .lang-si .slide.center .title { font-size: 46px; }
+.lang-ta .hero-title, .lang-si .hero-title { font-size: 60px; line-height: 1.18; letter-spacing: -0.01em; }
+.lang-ta .hero-ta, .lang-si .hero-ta { font-size: 22px; }
+.lang-ta .sub, .lang-si .sub { font-size: 17.5px; line-height: 1.6; }
+.lang-ta .ta-line, .lang-si .ta-line { font-size: 18px; }
+.lang-ta .bullet h5, .lang-si .bullet h5, .lang-ta .channel h5, .lang-si .channel h5 { font-size: 15px; line-height: 1.35; }
+.lang-ta .bullet p, .lang-si .bullet p, .lang-ta .channel p, .lang-si .channel p { font-size: 13px; }
+.lang-ta .pain h4, .lang-si .pain h4 { font-size: 16.5px; line-height: 1.35; }
+.lang-ta .pain p, .lang-si .pain p { font-size: 13.5px; }
+.lang-ta .tl-card h4, .lang-si .tl-card h4 { font-size: 17px; }
+.lang-ta .tl-card p, .lang-si .tl-card p { font-size: 13.5px; }
+.lang-ta .check, .lang-si .check { font-size: 16.5px; }
+.lang-ta .trust-card h4, .lang-si .trust-card h4 { font-size: 19px; }
+.lang-ta .trust-card p, .lang-si .trust-card p { font-size: 14.5px; }
+.lang-ta .shop-card h4, .lang-si .shop-card h4 { font-size: 16.5px; }
+.lang-ta .plan li, .lang-si .plan li { font-size: 14px; }
+.lang-ta .plan-head h4, .lang-si .plan-head h4 { font-size: 21px; }
+.lang-ta .offer-step h5, .lang-si .offer-step h5, .lang-ta .care-row h5, .lang-si .care-row h5 { font-size: 16.5px; }
+.lang-ta .offer-step p, .lang-si .offer-step p, .lang-ta .care-row p, .lang-si .care-row p { font-size: 13.5px; }
+.lang-ta .ref-node h4, .lang-si .ref-node h4 { font-size: 20px; }
+.lang-ta .ref-node p, .lang-si .ref-node p { font-size: 14px; }
+.lang-ta .road-card h4, .lang-si .road-card h4 { font-size: 24px; }
+.lang-ta .road-card li, .lang-si .road-card li { font-size: 15px; }
+.lang-ta .mini, .lang-si .mini { font-size: 13px; }
+.lang-ta .fn-row, .lang-si .fn-row { font-size: 15px; }
+.lang-ta .calc label span, .lang-si .calc label span { font-size: 14.5px; }
+.lang-ta .out-card small, .lang-si .out-card small { font-size: 14px; }
+.lang-ta .kicker, .lang-si .kicker { text-transform: none; letter-spacing: 0; }
+.lang-ta .dash-row, .lang-si .dash-row { font-size: 13px; }
+.lang-ta .btn-primary, .lang-si .btn-primary { font-size: 15.5px; }
+.lang-ta .chip, .lang-si .chip { font-size: 14px; }

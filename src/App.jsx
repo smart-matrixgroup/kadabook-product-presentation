@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, LayoutGrid, NotebookText, Maximize, MonitorPlay, X, Keyboard } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LayoutGrid, NotebookText, Maximize, MonitorPlay, X, Keyboard, Music, Languages } from 'lucide-react';
 import { SLIDES } from './slides.jsx';
+import { LangContext, LANGS } from './components/ui.jsx';
+import { music } from './music.js';
 
 const Scene3D = lazy(() => import('./components/Scene3D.jsx'));
 
@@ -32,7 +34,28 @@ export default function App() {
   const [notes, setNotes] = useState(false);
   const [grid, setGrid] = useState(false);
   const [help, setHelp] = useState(false);
+  const [lang, setLang] = useState(() => localStorage.getItem('kb-lang') || 'en');
+  const [playing, setPlaying] = useState(false);
+  const [vol, setVol] = useState(() => Number(localStorage.getItem('kb-vol') || 0.5));
   const scale = useStageScale();
+
+  useEffect(() => {
+    localStorage.setItem('kb-lang', lang);
+    document.documentElement.lang = lang;
+  }, [lang]);
+  const cycleLang = useCallback(() => setLang((l) => LANGS[(LANGS.findIndex((x) => x.id === l) + 1) % LANGS.length].id), []);
+
+  const toggleMusic = useCallback(() => {
+    setPlaying((p) => {
+      if (p) music.stop();
+      else music.start(vol).catch(() => setPlaying(false));
+      return !p;
+    });
+  }, [vol]);
+  useEffect(() => {
+    localStorage.setItem('kb-vol', String(vol));
+    if (playing) music.setVolume(vol);
+  }, [vol, playing]);
   const chan = useRef(null);
   const iRef = useRef(i);
   iRef.current = i;
@@ -82,6 +105,11 @@ export default function App() {
       else if (k === 'g' || k === 'G' || k === 'o' || k === 'O') setGrid((v) => !v);
       else if (k === 'f' || k === 'F') toggleFull();
       else if (k === 'p' || k === 'P') openPresenter();
+      else if (k === 'm' || k === 'M') toggleMusic();
+      else if (k === 'l' || k === 'L') cycleLang();
+      else if (k === '1') setLang('en');
+      else if (k === '2') setLang('si');
+      else if (k === '3') setLang('ta');
       else if (k === '?' || k === 'h' || k === 'H') setHelp((v) => !v);
       else if (k === 'Escape') {
         setGrid(false);
@@ -90,7 +118,7 @@ export default function App() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [go, total]);
+  }, [go, total, toggleMusic, cycleLang]);
 
   // swipe on touch screens
   const touch = useRef(null);
@@ -104,9 +132,11 @@ export default function App() {
 
   const S = SLIDES[i];
   const Slide = S.C;
+  const nav = (s) => s.nav[lang] || s.nav.en;
 
   return (
-    <div className="app" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+    <LangContext.Provider value={lang}>
+    <div className={`app lang-${lang}`} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       <div className="bg-mesh" />
       <Suspense fallback={null}>
         <Scene3D slide={i} />
@@ -117,7 +147,7 @@ export default function App() {
         <div className="stage" style={{ width: W, height: H, transform: `scale(${scale})` }}>
           <AnimatePresence mode="wait" custom={dir}>
             <motion.div
-              key={S.id}
+              key={`${S.id}-${lang}`}
               className="slide-frame"
               custom={dir}
               initial={{ opacity: 0, x: dir * 120, rotateY: dir * -8, filter: 'blur(10px)' }}
@@ -142,10 +172,35 @@ export default function App() {
         <span>KadaBook</span>
         <i />
         <AnimatePresence mode="wait">
-          <motion.em key={S.nav} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-            {S.nav}
+          <motion.em key={nav(S)} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+            {nav(S)}
           </motion.em>
         </AnimatePresence>
+      </div>
+
+      {/* language + music (top right) */}
+      <div className="topbar">
+        <div className="lang-switch" role="group" aria-label="Language">
+          <Languages size={16} />
+          {LANGS.map((x) => (
+            <button key={x.id} className={lang === x.id ? 'on' : ''} onClick={() => setLang(x.id)} title={`${x.name} (L)`}>
+              {lang === x.id && <motion.span layoutId="lang-pill" className="lang-pill" transition={{ type: 'spring', stiffness: 400, damping: 32 }} />}
+              <b>{x.label}</b>
+            </button>
+          ))}
+        </div>
+        <div className={`music-pill ${playing ? 'on' : ''}`}>
+          <button onClick={toggleMusic} title="Background music (M)">
+            {playing ? (
+              <span className="eq"><i /><i /><i /><i /></span>
+            ) : (
+              <Music size={17} />
+            )}
+          </button>
+          {playing && (
+            <input type="range" min={0} max={1} step={0.05} value={vol} onChange={(e) => setVol(+e.target.value)} title="Volume" />
+          )}
+        </div>
       </div>
 
       {/* dock */}
@@ -155,7 +210,7 @@ export default function App() {
         </button>
         <div className="dots">
           {SLIDES.map((s, k) => (
-            <button key={s.id} className={k === i ? 'on' : ''} onClick={() => go(k)} title={s.nav} />
+            <button key={s.id} className={k === i ? 'on' : ''} onClick={() => go(k)} title={nav(s)} />
           ))}
         </div>
         <span className="count">
@@ -200,7 +255,7 @@ export default function App() {
                 <X size={18} />
               </button>
             </div>
-            <h3>{S.nav}</h3>
+            <h3>{nav(S)}</h3>
             <p className="notes-ta">{S.ta}</p>
             <h6>Must mention</h6>
             <ul>
@@ -208,7 +263,7 @@ export default function App() {
                 <li key={p}>{p}</li>
               ))}
             </ul>
-            {SLIDES[i + 1] && <div className="notes-next">Next → {SLIDES[i + 1].nav}</div>}
+            {SLIDES[i + 1] && <div className="notes-next">Next → {nav(SLIDES[i + 1])}</div>}
           </motion.aside>
         )}
       </AnimatePresence>
@@ -231,7 +286,7 @@ export default function App() {
                   }}
                 >
                   <span>{String(k + 1).padStart(2, '0')}</span>
-                  <b>{s.nav}</b>
+                  <b>{nav(s)}</b>
                   <small>{s.time}</small>
                 </motion.button>
               ))}
@@ -247,11 +302,14 @@ export default function App() {
             <span><kbd>→</kbd> <kbd>Space</kbd> next · <kbd>←</kbd> back</span>
             <span><kbd>N</kbd> speaker notes · <kbd>G</kbd> all slides</span>
             <span><kbd>P</kbd> presenter window (open on laptop, show this on projector)</span>
+            <span><kbd>L</kbd> language · <kbd>1</kbd> English <kbd>2</kbd> සිංහල <kbd>3</kbd> தமிழ்</span>
+            <span><kbd>M</kbd> music on / off</span>
             <span><kbd>F</kbd> full screen · clicker / PageDown works too</span>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
+    </LangContext.Provider>
   );
 }
 

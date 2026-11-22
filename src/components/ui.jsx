@@ -1,7 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, animate } from 'framer-motion';
 
 export const ease = [0.22, 1, 0.36, 1];
+
+/* ─── language: 'en' | 'si' | 'ta' ─── */
+export const LANGS = [
+  { id: 'en', label: 'EN', name: 'English' },
+  { id: 'si', label: 'සිං', name: 'සිංහල' },
+  { id: 'ta', label: 'தமி', name: 'தமிழ்' },
+];
+export const LangContext = createContext('en');
+export const useLang = () => useContext(LangContext);
+/** l(english, sinhala, tamil) → the text for the current language. */
+export function useL() {
+  const lang = useContext(LangContext);
+  return (en, si, ta) => (lang === 'si' ? si : lang === 'ta' ? ta : en);
+}
 
 /** Stagger container: children using <Rise> animate in sequence when the slide mounts. */
 export function Stagger({ children, className, delay = 0.08, gap = 0.08, style }) {
@@ -68,7 +82,19 @@ export function Phone({ src, alt = '', width = 270, tilt = 14, rotate = 0, delay
         style={{ rotateX: rx, rotateY: ry, '--glow': glow, animationDelay: `${delay * -2}s` }}
       >
         <div className="phone-screen">
-          <img src={src} alt={alt} draggable="false" />
+          <div className="phone-status">
+            <span className="ps-time">9:41</span>
+            <span className="ps-island" />
+            <span className="ps-icons">
+              <i className="ps-signal"><b /><b /><b /><b /></i>
+              <i className="ps-wifi" />
+              <i className="ps-batt" />
+            </span>
+          </div>
+          <div className="phone-app">
+            <img src={src} alt={alt} draggable="false" />
+          </div>
+          <div className="phone-home"><span /></div>
           <div className="phone-sheen" />
         </div>
       </motion.div>

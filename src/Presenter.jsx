@@ -72,7 +72,7 @@ export default function Presenter() {
       <main>
         <section className="p-now">
           <small>Now · suggested {S.time}</small>
-          <h1>{S.nav}</h1>
+          <h1>{S.nav.en} · {S.nav.ta}</h1>
           <p className="p-ta">{S.ta}</p>
           <h6>Must mention</h6>
           <ul>
@@ -84,13 +84,13 @@ export default function Presenter() {
         <aside>
           <div className="p-next">
             <small>Next</small>
-            <h3>{N ? N.nav : '— end —'}</h3>
+            <h3>{N ? N.nav.en : '— end —'}</h3>
             {N && <ul>{N.points.slice(0, 2).map((p) => <li key={p}>{p}</li>)}</ul>}
           </div>
           <div className="p-list">
             {SLIDES.map((s, k) => (
               <button key={s.id} className={k === i ? 'on' : ''} onClick={() => go(k)}>
-                <span>{String(k + 1).padStart(2, '0')}</span> {s.nav}
+                <span>{String(k + 1).padStart(2, '0')}</span> {s.nav.en}
               </button>
             ))}
           </div>
