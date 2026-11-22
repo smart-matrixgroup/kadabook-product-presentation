@@ -25,7 +25,7 @@ Opens full screen by default: if the browser isn't already full screen, a Start 
 | **P** | **presenter window** — open on your laptop, drag the main window to the projector. Next/Back in the presenter window moves the projector. Shows notes, next slide, timer. |
 | **G** | all slides grid |
 | **F** | full screen |
-| **L** or the top-right switch | language: English / සිංහල / தமிழ் (also keys **1 / 2 / 3**) — remembered next time |
+| **L** or the top-right switch | language: English / සිංහල / தமிழ் (also keys **1 / 2 / 3**). Always opens in English; `?lang=ta` / `?lang=si` in the link opens Tamil / Sinhala |
 | **M** or the ♫ button | background music on/off, volume slider appears next to it |
 
 Slide 17 ("The numbers") has live sliders — move them during the meeting.

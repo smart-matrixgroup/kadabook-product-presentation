@@ -34,7 +34,12 @@ export default function App() {
   const [notes, setNotes] = useState(false);
   const [grid, setGrid] = useState(false);
   const [help, setHelp] = useState(false);
-  const [lang, setLang] = useState(() => localStorage.getItem('kb-lang') || 'en');
+  // Always opens in English (start screen + slides). Switch with the language button / L / 1-2-3.
+  // A link can still open another language directly: ?lang=ta or ?lang=si
+  const [lang, setLang] = useState(() => {
+    const q = new URLSearchParams(location.search).get('lang');
+    return q === 'si' || q === 'ta' ? q : 'en';
+  });
   const [playing, setPlaying] = useState(false);
   const [vol, setVol] = useState(() => Number(localStorage.getItem('kb-vol') || 0.5));
   const scale = useStageScale();
@@ -58,7 +63,6 @@ export default function App() {
   }, [needStart]);
 
   useEffect(() => {
-    localStorage.setItem('kb-lang', lang);
     document.documentElement.lang = lang;
   }, [lang]);
   const cycleLang = useCallback(() => setLang((l) => LANGS[(LANGS.findIndex((x) => x.id === l) + 1) % LANGS.length].id), []);
