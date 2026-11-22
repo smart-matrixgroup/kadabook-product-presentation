@@ -201,9 +201,14 @@ export default function App() {
           <motion.div className="start-gate" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 1.04 }} transition={{ duration: 0.5 }}>
             <motion.div className="start-card" initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.15, duration: 0.6 }}>
               <img src="assets/kadabook-logo.png" alt="" />
-              <b>KadaBook</b>
-              <button className="btn-primary"><Play size={18} fill="currentColor" /> Start presentation</button>
-              <small>Click anywhere or press any key · opens full screen · Esc to exit</small>
+              <b>
+                Kada<span>Book</span>
+              </b>
+              <p className="start-tag">{pick(lang, 'The shop’s book, now in your pocket.', 'කඩේ ගිණුම් පොත, දැන් ඔබේ සාක්කුවේ.', 'கடையின் கணக்கு — இனி உங்கள் கையில்.')}</p>
+              <button className="btn-primary">
+                <Play size={18} fill="currentColor" /> {pick(lang, 'Discover KadaBook', 'KadaBook ගවේෂණය කරන්න', 'KadaBook-ஐ கண்டறியுங்கள்')}
+              </button>
+              <small>{pick(lang, 'Tap anywhere to begin', 'ආරම්භ කිරීමට ඕනෑම තැනක් ඔබන්න', 'தொடங்க எங்காவது தட்டுங்கள்')}</small>
             </motion.div>
           </motion.div>
         )}
@@ -343,6 +348,8 @@ export default function App() {
     </LangContext.Provider>
   );
 }
+
+const pick = (lang, en, si, ta) => (lang === 'si' ? si : lang === 'ta' ? ta : en);
 
 function isScreenFull() {
   return !!document.fullscreenElement || (window.innerHeight >= screen.height - 2 && window.innerWidth >= screen.width - 2);
