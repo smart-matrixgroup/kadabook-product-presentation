@@ -15,7 +15,8 @@ import { Stagger, Rise, Phone, Counter, Glass, IconTile, Kicker, Title, ease, us
  * Presenter notes (bottom of file) stay in Tamil — they are for the speaker, not the screen.
  */
 
-const shot = (name) => `screenshots/${name}.png`;
+// square-cornered copies (scripts/square-corners.py) — the originals have a mock phone's rounded corners baked in
+const shot = (name) => `app/${name}.png`;
 
 /* ───────────────────────── 01 HERO ───────────────────────── */
 function Hero() {
@@ -883,10 +884,10 @@ function Marketing() {
   ];
   const funnel = [
     [l('Video views', 'වීඩියෝ නැරඹීම්', 'Video பார்வைகள்'), 100],
-    [l('Enquiries', 'විමසීම්', 'விசாரணைகள்'), 78],
-    [l('Free installs', 'නොමිලේ ස්ථාපන', 'இலவச install'), 58],
-    [l('Daily users', 'දෛනික භාවිතා කරන්නන්', 'தினசரி பயனர்கள்'), 42],
-    [l('Paying shops', 'ගෙවන කඩ', 'பணம் கட்டும் கடைகள்'), 30],
+    [l('Enquiries', 'විමසීම්', 'விசாரணைகள்'), 88],
+    [l('Free installs', 'නොමිලේ ස්ථාපන', 'இலவச install'), 76],
+    [l('Daily users', 'දෛනික භාවිතා කරන්නන්', 'தினசரி பயனர்கள்'), 64],
+    [l('Paying shops', 'ගෙවන කඩ', 'பணம் கட்டும் கடைகள்'), 54],
   ];
   return (
     <div className="slide split">

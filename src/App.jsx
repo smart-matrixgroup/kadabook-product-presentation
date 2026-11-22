@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, LayoutGrid, NotebookText, Maximize, MonitorPlay, X, Keyboard, Music, Languages } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LayoutGrid, NotebookText, Maximize, MonitorPlay, X, Keyboard, Music, Languages, Play } from 'lucide-react';
 import { SLIDES } from './slides.jsx';
 import { LangContext, LANGS } from './components/ui.jsx';
 import { music } from './music.js';
@@ -38,6 +38,24 @@ export default function App() {
   const [playing, setPlaying] = useState(false);
   const [vol, setVol] = useState(() => Number(localStorage.getItem('kb-vol') || 0.5));
   const scale = useStageScale();
+
+  /* Full screen by default. Browsers only allow it after a click / key press, so the very first
+     interaction anywhere enters full screen (once). If the browser was already opened full screen
+     (Start-Presentation.bat uses --start-fullscreen), nothing is shown. Exiting stays manual (Esc / F). */
+  const [needStart, setNeedStart] = useState(() => !isScreenFull());
+  useEffect(() => {
+    if (!needStart) return;
+    const first = () => {
+      if (!document.fullscreenElement && !isScreenFull()) document.documentElement.requestFullscreen?.().catch(() => {});
+      setNeedStart(false);
+    };
+    window.addEventListener('pointerdown', first, { once: true, capture: true });
+    window.addEventListener('keydown', first, { once: true, capture: true });
+    return () => {
+      window.removeEventListener('pointerdown', first, { capture: true });
+      window.removeEventListener('keydown', first, { capture: true });
+    };
+  }, [needStart]);
 
   useEffect(() => {
     localStorage.setItem('kb-lang', lang);
@@ -178,6 +196,19 @@ export default function App() {
         </AnimatePresence>
       </div>
 
+      <AnimatePresence>
+        {needStart && (
+          <motion.div className="start-gate" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 1.04 }} transition={{ duration: 0.5 }}>
+            <motion.div className="start-card" initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.15, duration: 0.6 }}>
+              <img src="assets/kadabook-logo.png" alt="" />
+              <b>KadaBook</b>
+              <button className="btn-primary"><Play size={18} fill="currentColor" /> Start presentation</button>
+              <small>Click anywhere or press any key · opens full screen · Esc to exit</small>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* language + music (top right) */}
       <div className="topbar">
         <div className="lang-switch" role="group" aria-label="Language">
@@ -311,6 +342,10 @@ export default function App() {
     </div>
     </LangContext.Provider>
   );
+}
+
+function isScreenFull() {
+  return !!document.fullscreenElement || (window.innerHeight >= screen.height - 2 && window.innerWidth >= screen.width - 2);
 }
 
 function toggleFull() {
